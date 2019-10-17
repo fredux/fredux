@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	<title>Consulta Computadores</title>
+	
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.1/css/responsive.dataTables.min.css">
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.jqueryui.min.css">
+	
+
+	
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.jqueryui.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
+
+	<style type="text/css" class="init">
+			
+		td.details-control {
+			background: url('images/details_open.png') no-repeat center center; 
+			cursor: pointer;
+		}
+		tr.details td.details-control {	background: url('images/details_close.png') no-repeat center center;
+		}
+
+	</style>
+	
+</head>
+<body >
+	<h1 style="text-align: center"> Computadores</h1>
+	<table id="example" class="display ui celled table cell-border row-border stripe" style=" border: 2px; font-size: 14px;">
+		<thead>
+			<tr>
+				<th></th>
+				<th>Usuario</th>
+				<th>Setor</th>
+				<th>Computador</th>
+				<th>Patrimonio CPU</th>
+				<th>Patrimonio Monitor</th>
+				<th>IP</th>
+				<th>MAC</th>
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<th></th>
+				<th>Usuario</th>
+				<th>Setor</th>
+				<th>Computador</th>
+				<th>Patrimonio CPU</th>
+				<th>Patrimonio Monitor</th>
+				<th>IP</th>
+				<th>MAC</th>
+			</tr>
+		</tfoot>
+	</table>
+</body>
+<script type="text/javascript" class="init">
+function format ( d ) {
+    return 	'CPF: '+d.cpf+' '+'<br>'+
+			'Patrimonio monitor 2: '+d.patrimonio_monitor2+'<br>'+
+			'IP 2: '+d.ip_2+'<br>'+
+			'MAC 2: '+d.mac_2+'<br>'+
+			'Observação: '+d.observacao+'<br>';
+}
+ 
+$(document).ready(function() {
+    var dt = $('#example').DataTable( {
+		//responsive: true,
+		pageLength: 200,
+
+        "processing": true,
+        "serverSide": true,
+        "ajax": "server_processing.php",
+        "columns": [
+            {
+                "class":          "details-control",
+                "orderable":      false,
+                "data":           null,
+                "defaultContent": ""
+            },
+				{ "data": "usuario" },
+				{ "data": "setor" },
+				{ "data": "nome_computador" },
+				{ "data": "patrimonio_cpu" },
+				{ "data": "patrimonio_monitor1" },
+				{ "data": "ip_1" },
+				{ "data": "mac_1" }
+        ],
+        "order": [[1, 'asc']],
+		   language:	{
+					"sEmptyTable":   "Nenhum registro encontrado",
+					"sProcessing":   "A processar...",
+					"sLengthMenu":   "Mostrar _MENU_ registos",
+					"sZeroRecords":  "Não foram encontrados resultados",
+					"sInfo":         "Mostrando de _START_ até _END_ de _TOTAL_ registos",
+					"sInfoEmpty":    "Mostrando de 0 até 0 de 0 registos",
+					"sInfoFiltered": "(filtrado de _MAX_ registos no total)",
+					"sInfoPostFix":  "",
+					"sSearch":       "Procurar:",
+					"sUrl":          "",
+					"oPaginate": {
+						"sFirst":    "Primeiro",
+						"sPrevious": "Anterior",
+						"sNext":     "Seguinte",
+						"sLast":     "Último"
+					},
+					"oAria": {
+						"sSortAscending":  ": Ordenar colunas de forma ascendente",
+						"sSortDescending": ": Ordenar colunas de forma descendente"
+				}}
+		
+    } );
+ 
+    // Array to track the ids of the details displayed rows
+    var detailRows = [];
+ 
+    $('#example tbody').on( 'click', 'tr td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = dt.row( tr );
+        var idx = $.inArray( tr.attr('id'), detailRows );
+ 
+        if ( row.child.isShown() ) {
+            tr.removeClass( 'details' );
+            row.child.hide();
+ 
+            // Remove from the 'open' array
+            detailRows.splice( idx, 1 );
+        }
+        else {
+            tr.addClass( 'details' );
+            row.child( format( row.data() ) ).show();
+ 
+            // Add to the 'open' array
+            if ( idx === -1 ) {
+                detailRows.push( tr.attr('id') );
+            }
+        }
+    } );
+ 
+    // On each draw, loop over the `detailRows` array and show any child rows
+    dt.on( 'draw', function () {
+        $.each( detailRows, function ( i, id ) {
+            $('#'+id+' td.details-control').trigger( 'click' );
+        } );
+    } );
+} );	
+	
+
+
+</script>
+
+</html>
+
+
